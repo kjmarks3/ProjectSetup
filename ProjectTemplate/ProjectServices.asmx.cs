@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
-using MySql.Data;
+//using MySQL.Data;
 using MySql.Data.MySqlClient;
 using System.Data;
+using ProjectTemplate.Models;
 
 namespace ProjectTemplate
 {
