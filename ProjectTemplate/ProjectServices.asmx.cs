@@ -56,11 +56,11 @@ namespace ProjectTemplate
         }
 
         [WebMethod(EnableSession = true)]
-        public string InsertUser(User user)
+        public string InsertUser(string username, string alias, string email)
         {
             try
             {
-                string query = "insert into User (CustomerID, Username, Alias) Values (" + user.CustomerID + "," + user.UserName + "," + user.Alias + ")";
+                string query = "insert into Users (User_Name, Alias, Email) Values ("  + '"' + username + '"' + "," + '"' + alias +'"' + "," + '"' + email+ '"' + ")";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
@@ -80,7 +80,7 @@ namespace ProjectTemplate
         {
             try
             {
-                string query = "insert into Posts (Post) Values (" + post + ")";
+                string query = "insert into User_Posts (Post) Values (" + '"' + post + '"' + ")";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
@@ -97,11 +97,11 @@ namespace ProjectTemplate
         }
 
         [WebMethod(EnableSession = true)]
-        public string ValidateUser(User user)
+        public string ValidateUser(string username, string password)
         {
             try
             {
-                string query = "SELECT COUNT(*) FROM login WHERE username='" + user.UserName + "' AND password='" + user.Password + "'";
+                string query = "SELECT COUNT(*) FROM Users WHERE User_Name='" + username + "' AND Password='" + password+ "'";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
@@ -109,9 +109,11 @@ namespace ProjectTemplate
                 MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
                 DataTable table = new DataTable();
 
+                adapter.Fill(table);
+
                 if (table.Rows[0][0].ToString() == "1")
                 {
-                    //put home page here to redirect
+                    //put home page here to redirec
                     return "Success!";
                 }
                 else

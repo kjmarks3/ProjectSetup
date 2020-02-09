@@ -7,7 +7,7 @@ namespace ProjectTemplate.Models
 {
     public class User
     {
-        public int CustomerID { set; get; }
+        public int UserID { set; get; }
         public string UserName { set; get; }
         public string Password { set; get; }
         public string Alias { set; get; }
