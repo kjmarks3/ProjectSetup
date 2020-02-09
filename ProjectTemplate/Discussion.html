@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Discussions</title>
+    <link rel="stylesheet" href="Content/css/discussion.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <div class="main-container">
+        <nav class="fixed-nav-bar">
+            <ul class="navbar-links">
+                <li><a href="/Discussion.html">Discussions</a></li>
+                <li><a href="#"><i class="fa fa-sign-out"> Logout</i></a></li>
+            </ul>
+        </nav>
+
+        <div class="discussion-container">
+            <h1 class="discussion-header">Employee Discussion Board</h1>
+            <div class="create-post-container">
+                <button type="button" class="btn" id="btnCreatePost" data-toggle="modal" data-target="#postmodal">Create Post</button>
+            </div>
+
+            <div class="modal fade" id="postmodal" tabindex="-1" role="dialog" aria-labelledby="PostModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="post-modal-title" id="PostModalLabel">Create New Post</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <label class="contron-label">Post: </label>
+                            <textarea id="txtPost"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" onclick="discussion.submit();" class="btn" id="btnModalPostSubmit" >Submit</button>
+                            <button type="button" class="btn btn-secondary" id="btnModalClose" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-container"></div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="Scripts/discussion.js"></script>
+<script>
+
+</script>

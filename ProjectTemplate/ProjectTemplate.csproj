@@ -90,9 +90,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\css\discussion.css" />
+    <Content Include="Content\css\login.css" />
+    <Content Include="Content\images\login-background.jpg" />
+    <Content Include="Content\images\User-Profile-128.png" />
+    <Content Include="Discussion.html" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
     <Content Include="ProjectServices.asmx" />
+    <Content Include="Scripts\discussion.js" />
+    <Content Include="Scripts\login.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -133,9 +140,9 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>50287</DevelopmentServerPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:50287/</IISUrl>
+          <IISUrl>http://localhost:50552/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

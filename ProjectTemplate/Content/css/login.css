@@ -1,0 +1,65 @@
+﻿body {
+    font-family: Arial; 
+    background-image: url(../images/login-background.jpg);
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: -50px;
+    left: calc(50% - 50px);
+}
+
+.logincontainer {
+    width: 250px;
+    height: 275px;
+    background: #2C3E50;
+    color: #fff;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    padding: 50px 30px;
+    box-shadow: 5px 10px 10px #1f1f1f;
+}
+
+h1 {
+    text-align: center;
+}
+
+label {
+    display: block;
+}
+
+#btnLogin {
+    width: 254px;
+    height: 36px;
+    border: none;
+    outline: none;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 18px;
+    background-color: #18BC9C;
+    color: #fff;
+}
+
+#btnLogin:hover {
+    background-color: #02ad8c;
+}
+
+.logincontainer input {
+    margin-bottom: 25px;
+    width: 254px;
+    border: none;
+    border-bottom: 1px solid #fff;
+    background: transparent;
+    outline: none;
+    height: 45px;
+    color: #fff;
+}
+
+.error-container {
+    background-color: #ffcccc;
+    color: red;
+}
