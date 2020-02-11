@@ -76,11 +76,16 @@ namespace ProjectTemplate
             }
         }
         [WebMethod(EnableSession = true)]
-        public string InsertPost(string post)
+        public string InsertPost(int userId, string post, int pointValue, bool anonymous)
         {
+            if (anonymous == true)
+            {
+                userId = 999999;
+            }
+
             try
             {
-                string query = "insert into User_Posts (Post) Values (" + '"' + post + '"' + ")";
+                string query = "insert into User_Posts (UserId, Post, Point_Value) Values (" +'"'+ userId +'"'+","+ '"' + post + '"' +","+'"'+pointValue+'"'+ ")";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
@@ -97,11 +102,10 @@ namespace ProjectTemplate
         }
 
         [WebMethod(EnableSession = true)]
-        public string ValidateUser(string username, string password)
+        public User ValidateUser(string username, string password)
         {
-            try
-            {
-                string query = "SELECT COUNT(*) FROM Users WHERE User_Name='" + username + "' AND Password='" + password+ "'";
+          
+                string query = "SELECT * FROM Users WHERE User_Name='" + username + "' AND Password='" + password+ "'";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
@@ -110,21 +114,45 @@ namespace ProjectTemplate
                 DataTable table = new DataTable();
 
                 adapter.Fill(table);
+                User user = new User();
 
-                if (table.Rows[0][0].ToString() == "1")
+                if (table.Rows[0][1].ToString() == username && table.Rows[0][2].ToString() == password)
                 {
                     //put home page here to redirec
-                    return "Success!";
+                    
+                    user.UserID = Convert.ToInt32(table.Rows[0][0]);
+                    user.UserName = table.Rows[0][1].ToString();
+                    user.Alias = table.Rows[0][3].ToString();
+                    user.Email = table.Rows[0][4].ToString();
+                    user.FirstName = table.Rows[0][5].ToString();
+                    user.LastName = table.Rows[0][6].ToString();
+                    user.JobTitle = table.Rows[0][7].ToString();
+                    user.Success = true;
+
+                    return user;
                 }
                 else
                 {
-                    return "User does not exist";
+                    user.Success = false;
+                    user.ErrorMessage = "Something went wrong, please check your credentials and db name and try again.";
+                    return user;
                 }
             }
-            catch (Exception e)
-            {
-                return "Something went wrong, please check your credentials and db name and try again.  Error: " + e.Message;
-            }
+        [WebMethod(EnableSession = true)]
+        public DataTable ViewPosts()
+        {
+            string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value FROM Users U , User_Posts P WHERE U.UserId = P.UserId";
+
+            MySqlConnection con = new MySqlConnection(getConString());
+
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+
+            adapter.Fill(table);
+
+
+            return table;
         }
     }
 }
