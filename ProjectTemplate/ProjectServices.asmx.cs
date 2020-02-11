@@ -139,9 +139,9 @@ namespace ProjectTemplate
                 }
             }
         [WebMethod(EnableSession = true)]
-        public DataTable ViewPosts()
+        public List<UserPost> ViewPosts()
         {
-            string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value FROM Users U , User_Posts P WHERE U.UserId = P.UserId";
+            string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value FROM Users U , User_Posts P WHERE U.UserId = P.UserId order by P.Post_Time";
 
             MySqlConnection con = new MySqlConnection(getConString());
 
@@ -151,8 +151,23 @@ namespace ProjectTemplate
 
             adapter.Fill(table);
 
+            List<UserPost> userPosts = new List<UserPost>();
 
-            return table;
+            foreach(DataRow row in table.Rows)
+            {
+                UserPost userPost = new UserPost();
+                userPost.FristName = row[0].ToString();
+                userPost.LasName = row[1].ToString();
+                userPost.PostId = Convert.ToInt32(row[2]);
+                userPost.Post = row[3].ToString();
+                userPost.PostTime = row[4].ToString();
+                userPost.PointValue = Convert.ToInt32(row[5]);
+
+                userPosts.Add(userPost);
+            }
+
+
+            return userPosts;
         }
     }
 }
