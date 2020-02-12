@@ -8,7 +8,7 @@ namespace ProjectTemplate.Models
     public class UserPost
     {
         public string FirstName { set; get; }
-        public string LasName { set; get; }
+        public string LastName { set; get; }
         public int PostId { set; get; }
         public string Post { set; get; }
         public string PostTime { set; get; }
