@@ -156,7 +156,7 @@ namespace ProjectTemplate
             foreach(DataRow row in table.Rows)
             {
                 UserPost userPost = new UserPost();
-                userPost.FristName = row[0].ToString();
+                userPost.FirstName = row[0].ToString();
                 userPost.LasName = row[1].ToString();
                 userPost.PostId = Convert.ToInt32(row[2]);
                 userPost.Post = row[3].ToString();

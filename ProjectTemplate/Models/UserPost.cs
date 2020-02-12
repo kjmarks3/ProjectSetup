@@ -7,7 +7,7 @@ namespace ProjectTemplate.Models
 {
     public class UserPost
     {
-        public string FristName { set; get; }
+        public string FirstName { set; get; }
         public string LasName { set; get; }
         public int PostId { set; get; }
         public string Post { set; get; }
