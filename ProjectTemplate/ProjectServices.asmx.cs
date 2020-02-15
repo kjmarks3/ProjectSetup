@@ -60,7 +60,7 @@ namespace ProjectTemplate
         {
             try
             {
-                string query = "insert into Users (User_Name, Alias, Email) Values ("  + '"' + username + '"' + "," + '"' + alias +'"' + "," + '"' + email+ '"' + ")";
+                string query = "insert into Users (User_Name, Alias, Email) Values (" + '"' + username + '"' + "," + '"' + alias + '"' + "," + '"' + email + '"' + ")";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
@@ -85,7 +85,7 @@ namespace ProjectTemplate
 
             try
             {
-                string query = "insert into User_Posts (UserId, Post, Point_Value) Values (" +'"'+ userId +'"'+","+ '"' + post + '"' +","+'"'+pointValue+'"'+ ")";
+                string query = "insert into User_Posts (UserId, Post, Point_Value) Values (" + '"' + userId + '"' + "," + '"' + post + '"' + "," + '"' + pointValue + '"' + ")";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
@@ -104,22 +104,24 @@ namespace ProjectTemplate
         [WebMethod(EnableSession = true)]
         public User ValidateUser(string username, string password)
         {
-          
-                string query = "SELECT * FROM Users WHERE User_Name='" + username + "' AND Password='" + password+ "'";
 
-                MySqlConnection con = new MySqlConnection(getConString());
+            string query = "SELECT * FROM Users WHERE User_Name='" + username + "' AND Password='" + password + "'";
 
-                MySqlCommand cmd = new MySqlCommand(query, con);
-                MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                DataTable table = new DataTable();
+            MySqlConnection con = new MySqlConnection(getConString());
 
-                adapter.Fill(table);
-                User user = new User();
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+            DataTable table = new DataTable();
 
+            adapter.Fill(table);
+            User user = new User();
+
+            try
+            {
                 if (table.Rows[0][1].ToString() == username && table.Rows[0][2].ToString() == password)
                 {
                     //put home page here to redirec
-                    
+
                     user.UserID = Convert.ToInt32(table.Rows[0][0]);
                     user.UserName = table.Rows[0][1].ToString();
                     user.Alias = table.Rows[0][3].ToString();
@@ -138,6 +140,11 @@ namespace ProjectTemplate
                     return user;
                 }
             }
+            catch (Exception e)
+            {
+                return user;
+            }
+        }
         [WebMethod(EnableSession = true)]
         public List<UserPost> ViewPosts()
         {
@@ -153,7 +160,7 @@ namespace ProjectTemplate
 
             List<UserPost> userPosts = new List<UserPost>();
 
-            foreach(DataRow row in table.Rows)
+            foreach (DataRow row in table.Rows)
             {
                 UserPost userPost = new UserPost();
                 userPost.FirstName = row[0].ToString();
@@ -168,6 +175,26 @@ namespace ProjectTemplate
 
 
             return userPosts;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetQuestion()
+        {
+            Random random = new Random();
+            int num = random.Next(4);
+
+            string query = "Select Question_Text FROM Actionable_Questions WHERE QuestionId" + "=" + num;
+            MySqlConnection con = new MySqlConnection(getConString());
+
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+
+            adapter.Fill(table);
+
+            string question = table.Rows[0][0].ToString();
+
+            return question;
         }
     }
 }
