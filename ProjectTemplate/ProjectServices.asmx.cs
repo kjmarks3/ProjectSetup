@@ -174,12 +174,9 @@ namespace ProjectTemplate
         }
 
         [WebMethod(EnableSession = true)]
-        public string GetQuestion()
+        public Question GetQuestion()
         {
-            Random random = new Random();
-            int num = random.Next(4);
-
-            string query = "Select Question_Text FROM Actionable_Questions WHERE QuestionId" + "=" + num;
+            string query = "Select Question_Text FROM Actionable_Questions;";
             MySqlConnection con = new MySqlConnection(getConString());
 
             MySqlCommand cmd = new MySqlCommand(query, con);
@@ -188,7 +185,21 @@ namespace ProjectTemplate
 
             adapter.Fill(table);
 
-            string question = table.Rows[0][0].ToString();
+            List<string> questionList = new List<string>();
+
+            foreach (DataRow row in table.Rows)
+            {
+                questionList.Add(row[0].ToString());
+            }
+
+            Random random = new Random();
+            int num = random.Next(questionList.Count());
+
+            Question question = new Question()
+            {
+                QuestionText = questionList[num],
+                Responses = GetQuestionResponses()
+            };
 
             return question;
         }
