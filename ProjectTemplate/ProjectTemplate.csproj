@@ -111,6 +111,7 @@
     <Compile Include="Models\QuestionResponse.cs" />
     <Compile Include="Models\UserPost.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserStats.cs" />
     <Compile Include="ProjectServices.asmx.cs">
       <DependentUpon>ProjectServices.asmx</DependentUpon>
       <SubType>Component</SubType>

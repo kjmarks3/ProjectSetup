@@ -244,5 +244,32 @@ namespace ProjectTemplate
 
             return postTopics;
         }
+
+        [WebMethod(EnableSession = true)]
+        public List<UserStats> GetUserStats()
+        {
+            string query = "Select UserId, Post_Total, Point_Total FROM User_Post_Points;";
+            MySqlConnection con = new MySqlConnection(getConString());
+
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+
+            adapter.Fill(table);
+
+            List<UserStats> userStats = new List<UserStats>();
+
+            foreach (DataRow row in table.Rows)
+            {
+                UserStats user = new UserStats();
+                user.UserId = Convert.ToInt32(row[0]);
+                user.PostTotal = Convert.ToInt32(row[1]);
+                user.PointTotal = Convert.ToInt32(row[2]);
+
+                userStats.Add(user);
+            }
+
+            return userStats;
+        }
     }
 }
