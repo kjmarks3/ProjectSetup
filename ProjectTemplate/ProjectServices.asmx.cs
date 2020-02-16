@@ -76,16 +76,12 @@ namespace ProjectTemplate
             }
         }
         [WebMethod(EnableSession = true)]
-        public string InsertPost(int userId, string post, int pointValue, bool anonymous)
+        public string InsertPost(int userId, string post, int pointValue, string topic, bool anonymous)
         {
-            if (anonymous == true)
-            {
-                userId = 999999;
-            }
-
             try
             {
-                string query = "insert into User_Posts (UserId, Post, Point_Value) Values (" + '"' + userId + '"' + "," + '"' + post + '"' + "," + '"' + pointValue + '"' + ")";
+                string query = "insert into User_Posts (UserId, Post, Point_Value, Topic, Anonymous) Values (" + '"' + userId + '"' + "," + '"' + post + '"' + "," + '"' + pointValue + '"' + "," + '"' + topic + '"' + "," + '"' + anonymous + '"' + "); " +
+                    "Update User_Post_Points Set Post_Total = Post_Total + 1 AND Point_Total = Point_Total + " + pointValue + " WHERE UserId = " + userId + ";";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
@@ -195,6 +191,58 @@ namespace ProjectTemplate
             string question = table.Rows[0][0].ToString();
 
             return question;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public List<QuestionResponse> GetQuestionResponses()
+        {
+            string query = "Select * FROM Question_Responses;";
+            MySqlConnection con = new MySqlConnection(getConString());
+
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+
+            adapter.Fill(table);
+
+            List<QuestionResponse> questionResponses = new List<QuestionResponse>();
+
+            foreach (DataRow row in table.Rows)
+            {
+                QuestionResponse response = new QuestionResponse();
+                response.ResponseId = Convert.ToInt32(row[0]);
+                response.ResponseValue = row[1].ToString();
+
+                questionResponses.Add(response);
+            }
+
+            return questionResponses;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public List<PostTopic> GetPostTopics()
+        {
+            string query = "Select * FROM Post_Topics;";
+            MySqlConnection con = new MySqlConnection(getConString());
+
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+
+            adapter.Fill(table);
+
+            List<PostTopic> postTopics = new List<PostTopic>();
+
+            foreach (DataRow row in table.Rows)
+            {
+                PostTopic topic = new PostTopic();
+                topic.TopicId = Convert.ToInt32(row[0]);
+                topic.Topic = row[1].ToString();
+
+                postTopics.Add(topic);
+            }
+
+            return postTopics;
         }
     }
 }

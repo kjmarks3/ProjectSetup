@@ -13,6 +13,8 @@ namespace ProjectTemplate.Models
         public string Post { set; get; }
         public string PostTime { set; get; }
         public int PointValue { set; get; }
+        public string PostTopic { set; get; }
+        public bool Anonymous { set; get; }
         public bool Success { get; set; }
     }
 }
