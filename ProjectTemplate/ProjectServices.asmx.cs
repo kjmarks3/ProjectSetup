@@ -98,6 +98,27 @@ namespace ProjectTemplate
         }
 
         [WebMethod(EnableSession = true)]
+        public string InsertQuestionResponse(int userId, int questionId, int responseId)
+        {
+            try
+            {
+                string query = "insert into User_Responses (UserId, QuestionId, ResponseId) Values (" + '"' + userId + '"' + "," + '"' + questionId + '"' + "," + '"' + responseId + '"' + ");";
+
+                MySqlConnection con = new MySqlConnection(getConString());
+
+                MySqlCommand cmd = new MySqlCommand(query, con);
+                MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                DataTable table = new DataTable();
+                adapter.Fill(table);
+                return "Success!";
+            }
+            catch (Exception e)
+            {
+                return "Something went wrong, please check your credentials and db name and try again.  Error: " + e.Message;
+            }
+        }
+
+        [WebMethod(EnableSession = true)]
         public User ValidateUser(string username, string password)
         {
 
