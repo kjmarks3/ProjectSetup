@@ -23,28 +23,24 @@
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (data) {
-                if (data.d === 'Success!') {
+                if (data.d.UserID !== null &&
+                    data.d.UserID !== '' &&
+                    data.d.UserID !== undefined) {
+                    sessionStorage['UserID'] = data.d.UserID;
+                    sessionStorage['UserName'] = data.d.FirstName + ' ' + data.d.LastName; 
                     window.open('Discussion.html', '_self'); 
                 } else {
-                    displayError('Incorect Username or Password.');
+                    genError.displayError('Incorect Username or Password.');
                 }
             },
             error: function (err) {
-                displayError('Unexpected error occurred, please try again later.');
+                genError.displayError('Unexpected error occurred, please try again later.');
             }
         });
     }
 
-    displayError = function (msg) {
-        $(".error-container").show();
-        $(".error-container").html('');
-        $(".error-container").html('<p>&#8226; ' + msg + '</p>');
-        $(".logincontainer").css({ "height": 325 });
-    }
-
     return {
         userLogin: userLogin,
-        displayError: displayError
     }
 
 })();

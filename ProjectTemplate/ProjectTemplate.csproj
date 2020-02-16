@@ -99,6 +99,7 @@
     <Content Include="index.html" />
     <Content Include="ProjectServices.asmx" />
     <Content Include="Scripts\discussion.js" />
+    <Content Include="Scripts\error.js" />
     <Content Include="Scripts\login.js" />
     <Content Include="Web.config" />
   </ItemGroup>
