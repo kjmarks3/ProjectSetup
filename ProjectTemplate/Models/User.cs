@@ -16,7 +16,8 @@ namespace ProjectTemplate.Models
         public string LastName { set; get; }
         public string JobTitle { set; get; }
         public string HireDate { set; get; }
-        public bool Anonymous { set; get; }
+        public int CurrentQuestion { set; get; }
+        public UserStats Stats { set; get; }
         public bool Success { set; get; }
 
         public string ErrorMessage { set; get; }

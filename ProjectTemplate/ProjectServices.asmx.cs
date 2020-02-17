@@ -80,8 +80,16 @@ namespace ProjectTemplate
         {
             try
             {
+                List<Question> questionList = GetQuestionList();
+                User currentUser = GetUser(userId);
+                int currentQuestion = new int();
+                if (currentUser.CurrentQuestion == questionList.Count())
+                    currentQuestion = 1 - questionList.Count;
+                else
+                    currentQuestion = 1;
+
                 string query = "insert into User_Posts (UserId, Post, Point_Value, Topic, Anonymous) Values (" + '"' + userId + '"' + "," + '"' + post + '"' + "," + '"' + pointValue + '"' + "," + '"' + topic + '"' + "," + '"' + anonymous + '"' + "); " +
-                    "Update User_Post_Points Set Post_Total = Post_Total + 1 WHERE UserId = " + userId + "; Update User_Post_Points Set Point_Total = Point_Total + " + pointValue + " WHERE UserId = " + userId + ";";
+                    "Update User_Post_Points Set Post_Total = Post_Total + 1 WHERE UserId = " + userId + "; Update User_Post_Points Set Point_Total = Point_Total + " + pointValue + " WHERE UserId = " + userId + "; Update Users Set Current_Question = Current_Question + (" + currentQuestion + ") WHERE UserId = " + userId + ";";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
@@ -165,7 +173,7 @@ namespace ProjectTemplate
         [WebMethod(EnableSession = true)]
         public List<UserPost> ViewPosts()
         {
-            string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value FROM Users U , User_Posts P WHERE U.UserId = P.UserId order by P.Post_Time";
+            string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value, UP.Point_Total FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId order by P.Post_Time;";
 
             MySqlConnection con = new MySqlConnection(getConString());
 
@@ -186,12 +194,65 @@ namespace ProjectTemplate
                 userPost.Post = row[3].ToString();
                 userPost.PostTime = row[4].ToString();
                 userPost.PointValue = Convert.ToInt32(row[5]);
+                userPost.UserPointTotal = Convert.ToInt32(row[6]);
+                userPost.Success = true;
 
                 userPosts.Add(userPost);
             }
 
 
             return userPosts;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public User GetUser(int userId)
+        {
+
+            string query = "SELECT * FROM Users WHERE UserId='" + userId + "';";
+
+            MySqlConnection con = new MySqlConnection(getConString());
+
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+
+            adapter.Fill(table);
+
+            string stats = "SELECT UserId, Post_Total, Point_Total FROM User_Post_Points WHERE UserId='" + userId + "';";
+
+            MySqlCommand cmd2 = new MySqlCommand(stats, con);
+            MySqlDataAdapter adapter2 = new MySqlDataAdapter(cmd2);
+            DataTable table2 = new DataTable();
+
+            adapter2.Fill(table2);
+            User user = new User();
+            UserStats userStats = new UserStats();
+
+            try
+            {
+                {
+                    userStats.UserId = Convert.ToInt32(table2.Rows[0][0]);
+                    userStats.PostTotal = Convert.ToInt32(table2.Rows[0][1]);
+                    userStats.PointTotal = Convert.ToInt32(table2.Rows[0][2]);
+
+                    user.UserID = Convert.ToInt32(table.Rows[0][0]);
+                    user.UserName = table.Rows[0][1].ToString();
+                    user.Alias = table.Rows[0][3].ToString();
+                    user.Email = table.Rows[0][4].ToString();
+                    user.FirstName = table.Rows[0][5].ToString();
+                    user.LastName = table.Rows[0][6].ToString();
+                    user.JobTitle = table.Rows[0][7].ToString();
+                    user.CurrentQuestion = Convert.ToInt32(table.Rows[0][10]);
+                    user.Stats = userStats;
+                    user.Success = true;
+
+                    return user;
+                }
+            }
+            catch (Exception e)
+            {
+                return user;
+            }
         }
 
         [WebMethod(EnableSession = true)]
@@ -226,6 +287,68 @@ namespace ProjectTemplate
             Question question = questionList[num];
 
             return question;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public Question GetNextQuestion(int userId)
+        {
+            string query = "Select * FROM Actionable_Questions;";
+            MySqlConnection con = new MySqlConnection(getConString());
+
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+
+            adapter.Fill(table);
+
+            List<Question> questionList = new List<Question>();
+
+            List<QuestionResponse> responses = GetQuestionResponses();
+
+            foreach (DataRow row in table.Rows)
+            {
+                Question tempQuestion = new Question();
+                tempQuestion.QuestionId = Convert.ToInt32(row[0]);
+                tempQuestion.QuestionText = row[1].ToString();
+                tempQuestion.Responses = responses;
+
+                questionList.Add(tempQuestion);
+            }
+
+            User currentUser = GetUser(userId);
+
+            Question question = questionList[currentUser.CurrentQuestion - 1];
+
+            return question;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public List<Question> GetQuestionList()
+        {
+            string query = "Select * FROM Actionable_Questions;";
+            MySqlConnection con = new MySqlConnection(getConString());
+
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+
+            adapter.Fill(table);
+
+            List<Question> questionList = new List<Question>();
+
+            List<QuestionResponse> responses = GetQuestionResponses();
+
+            foreach (DataRow row in table.Rows)
+            {
+                Question tempQuestion = new Question();
+                tempQuestion.QuestionId = Convert.ToInt32(row[0]);
+                tempQuestion.QuestionText = row[1].ToString();
+                tempQuestion.Responses = responses;
+
+                questionList.Add(tempQuestion);
+            }
+
+            return questionList;
         }
 
         [WebMethod(EnableSession = true)]

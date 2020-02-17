@@ -15,6 +15,7 @@ namespace ProjectTemplate.Models
         public int PointValue { set; get; }
         public string PostTopic { set; get; }
         public bool Anonymous { set; get; }
+        public int UserPointTotal { set; get; }
         public bool Success { get; set; }
     }
 }
