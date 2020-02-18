@@ -173,7 +173,7 @@ namespace ProjectTemplate
         [WebMethod(EnableSession = true)]
         public List<UserPost> ViewPosts()
         {
-            string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value, UP.Point_Total FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId order by P.Post_Time;";
+            string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value, P.Anonymous, UP.Point_Total FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId order by P.Post_Time desc;";
 
             MySqlConnection con = new MySqlConnection(getConString());
 
@@ -194,7 +194,8 @@ namespace ProjectTemplate
                 userPost.Post = row[3].ToString();
                 userPost.PostTime = row[4].ToString();
                 userPost.PointValue = Convert.ToInt32(row[5]);
-                userPost.UserPointTotal = Convert.ToInt32(row[6]);
+                userPost.Anonymous = row[6].ToString();
+                userPost.UserPointTotal = Convert.ToInt32(row[7]);
                 userPost.Success = true;
 
                 userPosts.Add(userPost);
