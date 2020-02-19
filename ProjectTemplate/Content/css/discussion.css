@@ -133,7 +133,8 @@
 
 #topic-select {
     margin-bottom: 10px;
-    width: 120px;
+    width: auto; 
+    max-width: 466px; 
     height: 30px; 
 }
 
@@ -166,4 +167,8 @@
     background-color: #18BC9C;
     border-color: #02ad8c;
     color: #fff;
+}
+
+#lblAnon {
+    margin-right: 94px; 
 }

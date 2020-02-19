@@ -9,7 +9,7 @@
 
         if (username === '' ||
             password === '') {
-            displayError('Please enter Username and Password.');
+            genError.displayError('Please enter Username and Password.');
             return false; 
         }
 
@@ -25,12 +25,13 @@
             success: function (data) {
                 if (data.d.UserID !== null &&
                     data.d.UserID !== '' &&
-                    data.d.UserID !== undefined) {
+                    data.d.UserID !== undefined &&
+                    data.d.UserID !== 0) {
                     sessionStorage['UserID'] = data.d.UserID;
                     sessionStorage['UserName'] = data.d.FirstName + ' ' + data.d.LastName; 
                     window.open('Discussion.html', '_self'); 
                 } else {
-                    genError.displayError('Incorect Username or Password.');
+                    genError.displayError('Incorrect Username or Password.');
                 }
             },
             error: function (err) {
