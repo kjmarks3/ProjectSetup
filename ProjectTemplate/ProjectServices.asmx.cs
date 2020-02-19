@@ -88,7 +88,7 @@ namespace ProjectTemplate
                 else
                     currentQuestion = 1;
 
-                string query = "insert into User_Posts (UserId, Post, Point_Value, Topic, Anonymous) Values (" + '"' + userId + '"' + "," + '"' + post + '"' + "," + '"' + pointValue + '"' + "," + '"' + topic + '"' + "," + '"' + anonymous + '"' + "); " +
+                string query = "insert into User_Posts (UserId, Post, Point_Value, Topic, Anonymous) Values (" + '"' + userId + '"' + "," + '"' + post + '"' + "," + '"' + pointValue + '"' + "," + '"' + topic + '"' + "," + anonymous + "); " +
                     "Update User_Post_Points Set Post_Total = Post_Total + 1 WHERE UserId = " + userId + "; Update User_Post_Points Set Point_Total = Point_Total + " + pointValue + " WHERE UserId = " + userId + "; Update Users Set Current_Question = Current_Question + (" + currentQuestion + ") WHERE UserId = " + userId + ";";
 
                 MySqlConnection con = new MySqlConnection(getConString());
