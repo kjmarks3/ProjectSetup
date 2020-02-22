@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text; 
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -76,7 +77,7 @@ namespace ProjectTemplate
             }
         }
         [WebMethod(EnableSession = true)]
-        public string InsertPost(int userId, string post, int pointValue, string topic, bool anonymous, int parentId)
+        public string InsertPost(int userId, string post, int pointValue, string topic, bool anonymous, int? parentId)
         {
             try
             {
@@ -87,13 +88,18 @@ namespace ProjectTemplate
                     currentQuestion = 1 - questionList.Count;
                 else
                     currentQuestion = 1;
+                var aQuery = new StringBuilder();
+                aQuery.Append("insert into User_Posts (UserId, Post, Point_Value, Topic, Anonymous" + (parentId.HasValue ? ", ParentId) " : ") "));
+                aQuery.Append($"Values ({userId}, '{post}', {pointValue}, '{topic}', {anonymous}");
+                aQuery.Append(parentId.HasValue ? "," + parentId.Value + ");" : "); ");
+                aQuery.Append($"Update User_Post_Points Set Post_Total = Post_Total + 1 WHERE UserId = {userId}; Update User_Post_Points Set Point_Total = Point_Total + {pointValue} WHERE UserId = {userId}; Update Users Set Current_Question = Current_Question + ({currentQuestion}) WHERE UserId = {userId};");
 
-                string query = "insert into User_Posts (UserId, Post, Point_Value, Topic, Anonymous, ParentId) Values (" + '"' + userId + '"' + "," + '"' + post + '"' + "," + '"' + pointValue + '"' + "," + '"' + topic + '"' + "," + anonymous  + "," + '"' + parentId + '"' +"); " +
-                    "Update User_Post_Points Set Post_Total = Post_Total + 1 WHERE UserId = " + userId + "; Update User_Post_Points Set Point_Total = Point_Total + " + pointValue + " WHERE UserId = " + userId + "; Update Users Set Current_Question = Current_Question + (" + currentQuestion + ") WHERE UserId = " + userId + ";";
+                //string query = "insert into User_Posts (UserId, Post, Point_Value, Topic, Anonymous, ParentId) Values (" + '"' + userId + '"' + "," + '"' + post + '"' + "," + '"' + pointValue + '"' + "," + '"' + topic + '"' + "," + anonymous + "," + (parentId.HasValue ? + " " + "'" + parentId.Value.ToString() + "'" : "NULL") + "); " +
+                //    "Update User_Post_Points Set Post_Total = Post_Total + 1 WHERE UserId = " + userId + "; Update User_Post_Points Set Point_Total = Point_Total + " + pointValue + " WHERE UserId = " + userId + "; Update Users Set Current_Question = Current_Question + (" + currentQuestion + ") WHERE UserId = " + userId + ";";
 
                 MySqlConnection con = new MySqlConnection(getConString());
 
-                MySqlCommand cmd = new MySqlCommand(query, con);
+                MySqlCommand cmd = new MySqlCommand(aQuery.ToString(), con);
                 MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
                 DataTable table = new DataTable();
                 adapter.Fill(table);
@@ -174,7 +180,7 @@ namespace ProjectTemplate
         public List<UserPost> ViewPosts()
         {
             string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value, P.Anonymous," +
-                " P.ParentId, UP.Point_Total FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.ParentId Is Null order by P.Post_Time desc;";
+                " P.ParentId, UP.Point_Total, P.Topic FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.ParentId Is Null order by P.Post_Time desc;";
 
             MySqlConnection con = new MySqlConnection(getConString());
 
@@ -186,7 +192,7 @@ namespace ProjectTemplate
 
 
             string query2 = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value, P.Anonymous," +
-               " P.ParentId, UP.Point_Total FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.ParentId IS NOT Null order by P.Post_Time desc;";
+               " P.ParentId, UP.Point_Total, P.Topic FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.ParentId IS NOT Null order by P.Post_Time desc;";
 
             MySqlConnection con2 = new MySqlConnection(getConString());
 
@@ -209,7 +215,8 @@ namespace ProjectTemplate
                 userPost.PostTime = row[4].ToString();
                 userPost.PointValue = Convert.ToInt32(row[5]);
                 userPost.Anonymous = row[6].ToString();
-                userPost.ParentId = null;              
+                userPost.ParentId = null;
+                userPost.PostTopic = row[9].ToString();
                 userPost.UserPointTotal = Convert.ToInt32(row[8]);
                 userPost.Success = true;
 
@@ -227,6 +234,7 @@ namespace ProjectTemplate
                     userReply.Anonymous = row2[6].ToString();
                     userReply.ParentId = Convert.ToInt32(row2[7]);
                     userReply.UserPointTotal = Convert.ToInt32(row2[8]);
+                    userReply.PostTopic = row[9].ToString();
                     userReply.Success = true;
                     if (userReply.ParentId == userPost.PostId)
                     {
@@ -236,6 +244,37 @@ namespace ProjectTemplate
             }
 
             return userPosts;
+        }
+
+        [WebMethod(EnableSession =true)]
+        public UserPost GetPost(int postId)
+        {
+            var userPostModel = new UserPost();
+            string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value, P.Anonymous," +
+                        $" P.ParentId, UP.Point_Total, P.Topic FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.PostId={postId};";
+
+            var con = new MySqlConnection(getConString());
+            var cmd = new MySqlCommand(query, con);
+            var adapater = new MySqlDataAdapter(cmd); 
+            var table = new DataTable();
+
+            adapater.Fill(table); 
+
+            foreach(DataRow row in table.Rows)
+            {
+                userPostModel.FirstName = row[0].ToString();
+                userPostModel.LastName = row[1].ToString();
+                userPostModel.PostId = Convert.ToInt32(row[2]);
+                userPostModel.Post = row[3].ToString();
+                userPostModel.PostTime = row[4].ToString();
+                userPostModel.PointValue = Convert.ToInt32(row[5]);
+                userPostModel.Anonymous = row[6].ToString();
+                userPostModel.PostTopic = row[9].ToString();
+                userPostModel.UserPointTotal = Convert.ToInt32(row[8]);
+                userPostModel.Success = true;
+            }
+
+            return userPostModel; 
         }
 
         [WebMethod(EnableSession = true)]

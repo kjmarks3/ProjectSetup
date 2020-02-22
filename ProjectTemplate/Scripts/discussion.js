@@ -9,14 +9,17 @@
         submitQuestionResponse,
         resetResponseRadioButton,
         getCurrentUser,
-        displayCurrentUserStats; 
+        displayCurrentUserStats,
+        openReplyWindow,
+        getPost; 
 
-    submit = function () {
+    submit = function (parentId) {
         const url = 'ProjectServices.asmx/InsertPost'; 
         const postText = $('#txtPost').val(); 
         const userId = sessionStorage['UserID']; 
         const topicText = $('#topic-select option:selected').text();
         const isAnonymous = $('#chkIsAnonyous').is(':checked');
+        var points = parentId !== null ? 1 : 5; 
 
         if (postText === '' ||
             postText === null ||
@@ -31,9 +34,10 @@
             data: JSON.stringify({
                 userId: userId,
                 post: postText,
-                pointValue: 5,
+                pointValue: points,
                 topic: topicText,
-                anonymous: isAnonymous
+                anonymous: isAnonymous,
+                parentId: parentId
             }),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
@@ -71,15 +75,26 @@
                             initials = firstNameChar + lastNameChar; 
                         } 
                         var footerHtml = '';
-                        if (item.Anonymous === '' || item.Anonymous === 'False') {
-                            footerHtml = '<p class="card-text">' + '<span class="card-text text-left">Posted by: ' + item.FirstName + ' ' + item.LastName + '(' + item.UserPointTotal + ')' + ' ' + item.PostTime + '</span>' + '<span class="card-text" id="card-reply">Reply</span>' + '</p>';
-                        } else {
-                            footerHtml = '<p class="card-text">' + '<span class="card-text text-left">Posted by: Anonymous ' + item.PostTime + '</span>' + '<span class="card-text" id="card-reply">Reply</span>' + '</p>';
+                        var userPointText = ''; 
+                        if (!item.IsCEO) {
+                            userPointText = ' (' + item.UserPointTotal + ')'; 
                         }
-                        $(".card-container").append('<div id='+ item.PostId +' class="card">' +
+                        var replyTest = item.ParentId !== '' && item.ParentId !== null ? '' : 'Reply';
+                        if (item.Anonymous === '' || item.Anonymous === 'False') {
+                            footerHtml = '<p class="card-text">' + '<span class="card-text text-left">Posted by: ' + item.FirstName + ' ' + item.LastName + userPointText + ' ' + item.PostTime + '</span>' + '<span class="card-reply-text" onclick="discussion.openReplyWindow($(this).attr(\'id\'))" id=' + item.PostId + '>' + replyTest + '</span>' + '</p>';
+                        } else {
+                            footerHtml = '<p class="card-text">' + '<span class="card-text text-left">Posted by: Anonymous ' + item.PostTime + '</span>' + '<span class="card-reply-text" onclick="discussion.openReplyWindow($(this).attr(\'id\'))" id='+ item.PostId +'>' + replyTest + '</span>' + '</p>';
+                        }
+                        var replyStyle = ''; 
+                        if (item.ParentId !== '' &&
+                            item.ParentId !== null) {
+                            replyStyle = "style = 'margin-left: 75px;'";
+                        }
+
+                        $(".card-container").append('<div id=' + item.PostId + ' '+ replyStyle + 'class="card">' +
                             '<div class="card-block">' +
                             '<h1 class="card-text square-card float-left">' + initials + '</h1>' +
-                            //'<h4 class="card-title">Employee Post</h4>' +
+                            '<h4 class="card-title">' + item.PostTopic + '</h4>' +
                             '<p class="card-text">' + item.Post + '</p>' +
                             '</div>' +
                             '<div class="card-footer">' +
@@ -111,7 +126,7 @@
             success: function (data) {
                 if (data.d) {
                     $.each(data.d, function (index, item) {
-                        $('#topic-select').append($('<option>').val(item.TopicId).text(item.Topic));
+                        $('#topic-select').append($('<option>').val(item.Topic).text(item.Topic));
                     });
                 }
                 
@@ -237,8 +252,45 @@
                 userStats.Stats !== undefined) {
                 totalUserPoints = userStats.Stats.PointTotal; 
             }
-            $('#loggedInUser').html(firstName + ' ' + lastName + '(' + totalUserPoints + ')');
+            $('#loggedInUser').html(firstName + ' ' + lastName + ' (' + totalUserPoints + ')');
         }
+    }
+
+    openReplyWindow = function (postId) {
+        getPost(function (data) {
+            console.log(data); 
+            if (data) {
+                $('#postmodal').modal('show');
+                $('#btnModalPostSubmit').attr('onclick', 'discussion.submit('+ postId +')');
+                $('#PostModalLabel').html('Post a Reply');
+                $('#topic-select').attr('disabled', true);
+                $('#topic-select').val(data.PostTopic);
+            }
+        }, postId); 
+    }
+
+    getPost = function(callback, postId) {
+        const url = 'ProjectServices.asmx/GetPost';
+        var postObject = {};
+        console.log(postId);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: JSON.stringify({
+                postId: postId
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (data) {
+                postObject = data.d; 
+            },
+            error: function (err) {
+
+            }
+        }).done(function () {
+            callback(postObject); 
+        });
     }
 
     return {
@@ -252,13 +304,18 @@
         submitQuestionResponse: submitQuestionResponse,
         resetResponseRadioButton: resetResponseRadioButton,
         getCurrentUser: getCurrentUser,
-        displayCurrentUserStats: displayCurrentUserStats
+        displayCurrentUserStats: displayCurrentUserStats,
+        openReplyWindow: openReplyWindow,
+        getPost: getPost
     }
 })(); 
 
 $("#postmodal").on('hide.bs.modal', function () {
     $('#txtPost').val(''); 
     $('.error-container').html('');
+    $('#btnModalPostSubmit').attr('onclick', 'discussion.submit(null)');
+    $('#PostModalLabel').html('Ask a Question');
+    $('#topic-select').attr('disabled', false);
     $('#chkIsAnonyous').prop('checked', false);
     $("#topic-select").prop("selectedIndex", 0);
 });
