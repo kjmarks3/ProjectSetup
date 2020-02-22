@@ -1,0 +1,28 @@
+﻿#leaderboard-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+tr:first-child {
+    background-color: #18BC9C;
+    color: #fff;
+    font-weight: bold; 
+}
+
+#leaderboard-container {
+    margin: 50px 75px 75px 75px;
+}
+
+h1 {
+    text-align: center;
+}

@@ -483,7 +483,7 @@ namespace ProjectTemplate
         [WebMethod(EnableSession = true)]
         public List<UserStats> GetUserStats()
         {
-            string query = "Select UserId, Post_Total, Point_Total FROM User_Post_Points;";
+            string query = "Select UP.UserId, UP.Post_Total, UP.Point_Total, U.First_Name, U.Last_Name, U.IsCEO FROM User_Post_Points UP, Users U WHERE UP.UserId = U.UserId ORDER BY UP.Point_Total desc";
             MySqlConnection con = new MySqlConnection(getConString());
 
             MySqlCommand cmd = new MySqlCommand(query, con);
@@ -493,15 +493,23 @@ namespace ProjectTemplate
             adapter.Fill(table);
 
             List<UserStats> userStats = new List<UserStats>();
+            var rank = 0;
+            var previousScore = 0; 
 
             foreach (DataRow row in table.Rows)
             {
                 UserStats user = new UserStats();
-                user.UserId = Convert.ToInt32(row[0]);
-                user.PostTotal = Convert.ToInt32(row[1]);
-                user.PointTotal = Convert.ToInt32(row[2]);
-
-                userStats.Add(user);
+                // Ignore CEO 
+                if (!Convert.ToBoolean(row[5])) {
+                    user.UserId = Convert.ToInt32(row[0]);
+                    user.PostTotal = Convert.ToInt32(row[1]);
+                    user.PointTotal = Convert.ToInt32(row[2]);
+                    user.FirstName = row[3].ToString();
+                    user.LastName = row[4].ToString();
+                    user.Rank = previousScore == user.PointTotal ? rank : ++rank;
+                    previousScore = user.PointTotal;
+                    userStats.Add(user);
+                }
             }
 
             return userStats;

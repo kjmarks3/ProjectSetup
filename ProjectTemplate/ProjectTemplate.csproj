@@ -91,15 +91,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\discussion.css" />
+    <Content Include="Content\css\leaderboard.css" />
     <Content Include="Content\css\login.css" />
+    <Content Include="Content\css\navbar.css" />
     <Content Include="Content\images\login-background.jpg" />
     <Content Include="Content\images\User-Profile-128.png" />
     <Content Include="Discussion.html" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
+    <Content Include="leaderboard.html" />
+    <Content Include="navbar.html" />
     <Content Include="ProjectServices.asmx" />
     <Content Include="Scripts\discussion.js" />
     <Content Include="Scripts\error.js" />
+    <Content Include="Scripts\leaderboard.js" />
     <Content Include="Scripts\login.js" />
     <Content Include="Web.config" />
   </ItemGroup>

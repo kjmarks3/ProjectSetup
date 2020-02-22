@@ -323,6 +323,7 @@ $("#questionModal").on('hide.bs.modal', function () {
 });
 
 $(document).ready(function () {
+    $('#nav-bar-container').load('navbar.html');
     $('#loggedInUser').html(sessionStorage['UserName']);
     discussion.getCurrentUser();
     discussion.getAllPosts();
