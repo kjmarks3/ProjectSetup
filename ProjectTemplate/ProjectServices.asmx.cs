@@ -180,7 +180,7 @@ namespace ProjectTemplate
         public List<UserPost> ViewPosts()
         {
             string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value, P.Anonymous," +
-                " P.ParentId, UP.Point_Total, P.Topic FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.ParentId Is Null order by P.Post_Time desc;";
+                " P.ParentId, UP.Point_Total, P.Topic, U.IsCEO FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.ParentId Is Null order by P.Post_Time desc;";
 
             MySqlConnection con = new MySqlConnection(getConString());
 
@@ -192,7 +192,7 @@ namespace ProjectTemplate
 
 
             string query2 = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value, P.Anonymous," +
-               " P.ParentId, UP.Point_Total, P.Topic FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.ParentId IS NOT Null order by P.Post_Time desc;";
+               " P.ParentId, UP.Point_Total, P.Topic, U.IsCEO FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.ParentId IS NOT Null order by P.Post_Time desc;";
 
             MySqlConnection con2 = new MySqlConnection(getConString());
 
@@ -219,6 +219,7 @@ namespace ProjectTemplate
                 userPost.PostTopic = row[9].ToString();
                 userPost.UserPointTotal = Convert.ToInt32(row[8]);
                 userPost.Success = true;
+                userPost.IsCEO = Convert.ToBoolean(row[10]); 
 
                 userPosts.Add(userPost);
 
@@ -234,8 +235,9 @@ namespace ProjectTemplate
                     userReply.Anonymous = row2[6].ToString();
                     userReply.ParentId = Convert.ToInt32(row2[7]);
                     userReply.UserPointTotal = Convert.ToInt32(row2[8]);
-                    userReply.PostTopic = row[9].ToString();
+                    userReply.PostTopic = row2[9].ToString();
                     userReply.Success = true;
+                    userReply.IsCEO = Convert.ToBoolean(row2[10]);
                     if (userReply.ParentId == userPost.PostId)
                     {
                         userPosts.Add(userReply);
@@ -251,7 +253,7 @@ namespace ProjectTemplate
         {
             var userPostModel = new UserPost();
             string query = "SELECT U.First_Name, U.Last_Name, P.PostId,  P.Post, P.Post_Time , P.Point_Value, P.Anonymous," +
-                        $" P.ParentId, UP.Point_Total, P.Topic FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.PostId={postId};";
+                        $" P.ParentId, UP.Point_Total, P.Topic, U.IsCEO FROM Users U , User_Posts P, User_Post_Points UP WHERE U.UserId = P.UserId AND U.UserId = UP.UserId AND P.PostId={postId};";
 
             var con = new MySqlConnection(getConString());
             var cmd = new MySqlCommand(query, con);
@@ -271,6 +273,7 @@ namespace ProjectTemplate
                 userPostModel.Anonymous = row[6].ToString();
                 userPostModel.PostTopic = row[9].ToString();
                 userPostModel.UserPointTotal = Convert.ToInt32(row[8]);
+                userPostModel.IsCEO = Convert.ToBoolean(row[10]); 
                 userPostModel.Success = true;
             }
 
@@ -316,6 +319,7 @@ namespace ProjectTemplate
                     user.LastName = table.Rows[0][6].ToString();
                     user.JobTitle = table.Rows[0][7].ToString();
                     user.CurrentQuestion = Convert.ToInt32(table.Rows[0][10]);
+                    user.IsCEO = Convert.ToBoolean(table.Rows[0][11]); 
                     user.Stats = userStats;
                     user.Success = true;
 

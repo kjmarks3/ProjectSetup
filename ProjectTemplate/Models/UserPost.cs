@@ -18,5 +18,6 @@ namespace ProjectTemplate.Models
         public int? ParentId {set; get;}
         public int UserPointTotal { set; get; }
         public bool Success { get; set; }
+        public bool IsCEO { get; set; }
     }
 }

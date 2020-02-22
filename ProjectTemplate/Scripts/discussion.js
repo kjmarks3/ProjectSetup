@@ -232,7 +232,6 @@
             success: function (data) {
                 if (data.d) {
                     userObject = data.d;
-                    console.log(userObject);
                     displayCurrentUserStats(userObject);
                 }
             },
@@ -258,7 +257,6 @@
 
     openReplyWindow = function (postId) {
         getPost(function (data) {
-            console.log(data); 
             if (data) {
                 $('#postmodal').modal('show');
                 $('#btnModalPostSubmit').attr('onclick', 'discussion.submit('+ postId +')');
@@ -272,7 +270,6 @@
     getPost = function(callback, postId) {
         const url = 'ProjectServices.asmx/GetPost';
         var postObject = {};
-        console.log(postId);
 
         $.ajax({
             url: url,

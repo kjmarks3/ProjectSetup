@@ -19,6 +19,7 @@ namespace ProjectTemplate.Models
         public int CurrentQuestion { set; get; }
         public UserStats Stats { set; get; }
         public bool Success { set; get; }
+        public bool IsCEO { get; set; }
 
         public string ErrorMessage { set; get; }
 
